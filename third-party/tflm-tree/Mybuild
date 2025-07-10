@@ -1,0 +1,13 @@
+package third_party.tflm_tree
+
+@Build(script="$(EXTERNAL_MAKE)")
+@BuildArtifactPath(cppflags="-std=c++17 -O3 -Wall -Wno-narrowing")
+@BuildDepends(embox.lib.libsupcxx)
+@BuildDepends(embox.compat.libc.all)
+static module libtflm {
+	@AddPrefix("^BUILD/extbld/^MOD_PATH")
+	source "libtflm.a"
+
+	@NoRuntime depends embox.compat.libc.all
+	@NoRuntime depends embox.lib.libsupcxx
+}

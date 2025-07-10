@@ -1,0 +1,32 @@
+package third_party.tflm_tree
+
+
+@Build(stage=2, script="$(EXTERNAL_MAKE)")
+@BuildArtifactPath(cppflags="-I$(EXTERNAL_BUILD_DIR)/third_party/tflm-tree")
+static module build {
+	option boolean tf_debug = false
+}
+
+
+@LinkerSection(text="tflm_text", rodata="tflm_rodata", data="tflm_data", bss="tflm_bss")
+@BuildDepends(third_party.tflm_tree.build)
+@Build(script="true")
+static module libtflm {
+	source "^BUILD/extbld/third_party/tflm-tree/libtflm.a"
+
+	@NoRuntime depends build
+}
+
+@App
+@LinkerSection(text="hello_world_testt")
+@Build(script="$(EXTERNAL_GXX)")
+@BuildArtifactPath(cppflags="-Ithird-party/tflm-tree/examples/hello_world")
+@BuildDepends(third_party.tflm_tree.libtflm)
+@BuildDepends(embox.compat.libc.all)
+@BuildDepends(embox.lib.libstdcxx)
+@BuildDepends(third_party.compiler_headers)
+static module hello_world {
+	source "third-party/tflm-tree/examples/hello_world/hello_world_test.cc"
+	source "third-party/tflm-tree/examples/hello_world/models/hello_world_float_model_data.cc"
+	source "third-party/tflm-tree/examples/hello_world/models/hello_world_int8_model_data.cc"
+}
